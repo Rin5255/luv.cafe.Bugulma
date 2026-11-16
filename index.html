@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LUV — кофейня и кондитерская в Бугульме</title>
+<meta name="description" content="Завтраки до 17:30, спешелти-кофе и авторские десерты ручной работы. Бугульма, ул. Советская, 56 и ул. Николая Гоголя, 38.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--milk:#fbf7f1;--beige:#efe4d4;--powder:#e9cfc6;--coffee:#6b4a38;--ink:#2f2b29;--muted:#7a6f68;--card:#fffdf9;--line:#e6d9c8;--r:22px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--milk:#1f1b19;--beige:#2a2421;--powder:#4a3631;--coffee:#d9b99f;--ink:#f1e9e0;--muted:#b3a69b;--card:#272220;--line:#3a322e}}
+:root[data-theme="dark"]{--milk:#1f1b19;--beige:#2a2421;--powder:#4a3631;--coffee:#d9b99f;--ink:#f1e9e0;--muted:#b3a69b;--card:#272220;--line:#3a322e}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--milk);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;margin:0;letter-spacing:.01em}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+section{padding:88px 0}
+.eyebrow{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--coffee);margin-bottom:14px}
+h2{font-size:clamp(32px,5vw,48px);line-height:1.15;margin-bottom:18px}
+.alt{background:var(--beige)}
+header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--milk) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px}
+.logo{font-family:"Cormorant Garamond",Georgia,serif;font-size:28px;letter-spacing:.3em;font-weight:600;color:var(--coffee)}
+nav{display:flex;gap:26px;font-size:14px}
+nav a{color:var(--muted);transition:.2s}nav a:hover{color:var(--coffee)}
+@media(max-width:860px){nav{display:none}}
+.btn{display:inline-block;padding:14px 28px;border-radius:999px;font-size:14px;font-weight:400;letter-spacing:.04em;border:1px solid var(--coffee);cursor:pointer;font-family:inherit;transition:.25s;text-align:center}
+.btn.fill{background:var(--coffee);color:var(--milk)}.btn.fill:hover{opacity:.88}
+.btn.ghost{color:var(--coffee);background:transparent}.btn.ghost:hover{background:var(--powder)}
+.btn.sm{padding:9px 18px;font-size:13px}
+.cartchip{position:relative}
+.cartchip b{display:inline-block;min-width:20px;margin-left:6px;border-radius:99px;background:var(--milk);color:var(--coffee);font-size:12px;padding:0 6px}
+/* PHOTO */
+.ph{position:relative;overflow:hidden;border-radius:var(--r);background:linear-gradient(135deg,var(--powder),var(--beige))}
+.ph img{display:block;width:100%;height:100%;object-fit:cover;filter:sepia(.18) saturate(.92) brightness(1.03) contrast(.97);transition:transform .8s cubic-bezier(.2,.7,.2,1),filter .6s}
+.ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(107,74,56,.16));pointer-events:none}
+.ph:hover img{transform:scale(1.08);filter:sepia(.1) saturate(1) brightness(1.05)}
+.ph img.fail{opacity:0}
+/* HERO */
+.hero{padding:72px 0 88px;background:radial-gradient(ellipse at 85% 0,var(--powder) 0,transparent 55%),radial-gradient(ellipse at 0 100%,var(--beige) 0,transparent 55%)}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+@media(max-width:860px){.hero .wrap{grid-template-columns:1fr;gap:36px}.hero{padding-top:44px}}
+.hero h1{font-size:clamp(40px,7vw,76px);line-height:1.04}
+.hero h1 em{font-style:italic;color:var(--coffee)}
+.hero p{max-width:28em;font-size:18px;color:var(--muted);margin:22px 0 32px}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.hero .ph{aspect-ratio:4/5;border-radius:200px 200px var(--r) var(--r)}
+@media(max-width:860px){.hero .ph{aspect-ratio:5/4;border-radius:var(--r)}}
+/* ABOUT */
+.about{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+@media(max-width:860px){.about{grid-template-columns:1fr;gap:30px}}
+.about .ph{aspect-ratio:1/1}
+.about p{color:var(--muted)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px}
+.fact{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px}
+.fact b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:22px;font-weight:500;color:var(--coffee)}
+.fact span{font-size:13px;color:var(--muted)}
+/* MENU */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;margin:22px 0 26px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:10px 20px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-size:14px;cursor:pointer;transition:.2s}
+.tab[aria-selected="true"]{background:var(--coffee);border-color:var(--coffee);color:var(--milk)}
+.note{color:var(--coffee);font-size:14px;margin:-6px 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.item .ph{aspect-ratio:4/3;border-radius:0}
+.item .body{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1}
+.item h3{font-size:23px;line-height:1.2;margin-bottom:4px}
+.item p{margin:0 0 14px;font-size:14px;color:var(--muted);flex:1}
+.item .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.price{font-family:"Cormorant Garamond",Georgia,serif;font-size:24px;font-weight:600;color:var(--coffee);white-space:nowrap}
+.legal{font-size:13px;color:var(--muted);margin-top:26px}
+/* REVIEWS */
+.score{display:flex;align-items:baseline;gap:12px}
+.score b{font-family:"Cormorant Garamond",Georgia,serif;font-size:56px;font-weight:500;color:var(--coffee)}
+.revs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:26px}
+.rev{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px}
+.stars{color:var(--coffee);letter-spacing:.2em;font-size:14px;margin-bottom:10px}
+.rev p{margin:0 0 14px;font-size:15px}.rev small{color:var(--muted)}
+/* LOCATIONS */
+.locs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px 0}
+@media(max-width:700px){.locs{grid-template-columns:1fr}}
+.loc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px}
+.loc h3{font-size:28px;margin-bottom:8px}
+.loc p{margin:4px 0;color:var(--muted);font-size:15px}
+.loc a.l{color:var(--coffee);border-bottom:1px solid var(--line)}
+.phones{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.mapbox{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+#map{height:440px;background:var(--beige);z-index:1}
+@media(max-width:700px){#map{height:360px}}
+.mapfallback{padding:40px 22px;text-align:center;color:var(--muted)}
+.pin{width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--coffee);border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.3);display:grid;place-items:center}
+.pin i{transform:rotate(45deg);color:#fff;font:600 12px "Cormorant Garamond",serif;font-style:normal}
+.leaflet-popup-content-wrapper{border-radius:18px;font-family:Inter,sans-serif;color:#2f2b29}
+.leaflet-popup-content{margin:16px 18px;line-height:1.5}
+.pop h4{font:600 22px "Cormorant Garamond",serif;margin:0 0 4px;color:#6b4a38}
+.pop p{margin:2px 0;font-size:13px;color:#7a6f68}
+.pop a.go{display:block;margin-top:12px;padding:10px 14px;border-radius:99px;background:#6b4a38;color:#fbf7f1;text-align:center;font-size:13px}
+.mapbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 20px;background:var(--card)}
+.mapbar span{font-size:14px;color:var(--muted)}
+/* ORDER */
+.orderwrap{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+@media(max-width:860px){.orderwrap{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px}
+.panel h3{font-size:26px;margin-bottom:14px}
+.cartlist{display:grid;gap:10px;margin-bottom:14px}
+.cl{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;font-size:14px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--milk);color:var(--coffee);cursor:pointer;font-size:15px;line-height:1}
+.empty{color:var(--muted);font-size:14px}
+.total{display:flex;justify-content:space-between;font-family:"Cormorant Garamond",Georgia,serif;font-size:24px;color:var(--coffee)}
+form{display:grid;gap:14px}
+label{font-size:13px;color:var(--muted);display:grid;gap:6px}
+input,textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--milk);border:1px solid var(--line);border-radius:14px;padding:13px 16px;width:100%}
+input:focus,textarea:focus{outline:2px solid var(--powder);border-color:var(--coffee)}
+textarea{min-height:96px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+.msg{font-size:14px;color:var(--coffee);min-height:20px}
+footer{padding:44px 0 56px;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:13px}
+footer .logo{display:block;margin-bottom:10px}footer a{margin:0 8px;color:var(--coffee)}
+/* TOAST + MOBILE BAR */
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:var(--ink);color:var(--milk);padding:10px 20px;border-radius:99px;font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:60}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.mbar{display:none}
+@media(max-width:768px){
+ section{padding:64px 0}
+ body{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+ .mbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:50;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--milk) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+ .mbar a{padding:12px 6px;border-radius:99px;border:1px solid var(--coffee);color:var(--coffee);text-align:center;font-size:13px;font-weight:400}
+ .mbar a.main{background:var(--coffee);color:var(--milk)}
+ header .btn.cartchip{display:none}
+}
+</style>
+</head>
+<body>
+<script>
+/* ============================================================
+   ФОТОГРАФИИ — ЗАМЕНА ЗА 2 МИНУТЫ
+   Здесь собраны ВСЕ ссылки на изображения сайта.
+   Как заменить: загрузите фото рядом с файлом (например, photos/hero.jpg)
+   и впишите путь вместо ссылки Unsplash. Формат — JPG/WebP, ширина от 900 px.
+   Если фото не загрузилось, блок покажет тёплую заливку (сайт не сломается).
+   Сейчас стоят заглушки Unsplash — проверьте, что они открываются.
+   ============================================================ */
+var U = function(id){ return "https://images.unsplash.com/photo-" + id + "?auto=format&fit=crop&w=900&q=75"; };
+var IMG = {
+  hero:   U("1509042239860-f550ce710b93"),  // главный экран: кофе
+  about:  U("1517248135467-4c7edcad34c4"),  // «О проекте»: светлый интерьер
+  menu: {                                    // обложка каждой категории меню
+    "Завтраки":          U("1488477181946-6428a0291777"),
+    "Авторские десерты": U("1578985545062-69928b1d9587"),
+    "Выпечка":           U("1555507036-ab1f4038808a"),
+    "Напитки":           U("1495474472287-4d71bcdd2085"),
+    "Торты на заказ":    U("1578985545062-69928b1d9587")
+  },
+  /* Точечная замена: фото отдельной позиции по её названию, например
+     "Сырники": "photos/syrniki.jpg"  — иначе берётся обложка категории. */
+  items: {}
+};
+
+/* ============================================================
+   КОНТАКТЫ, КООРДИНАТЫ, МЕНЮ И ЦЕНЫ — всё редактируется здесь
+   ============================================================ */
+var WA = "79872306785";   // номер для заявок в WhatsApp
+var PLACES = [
+  {n:"Кофейня LUV", a:"г. Бугульма, ул. Советская, 56", h:"Ежедневно 08:00–21:00", pos:[54.537245,52.793715], m:"1"},
+  {n:"Кондитерская LUV", a:"г. Бугульма, ул. Николая Гоголя, 38", h:"Витрина десертов, торты, самовывоз. Часы уточняйте по телефону", pos:[54.539680,52.801420], m:"2"}
+];
+var MENU = {
+ "Завтраки":{note:"Подаются ежедневно с 8:00 до 17:30", items:[
+  ["Сырники","Нежные, со сметаной и сезонным вареньем",340],
+  ["Овсяная каша","Тёплая, с ягодами, орехами и мёдом",280],
+  ["Яйца бенедикт","С тостом бриошь и голландским соусом",420],
+  ["Шакшука","Яйца в томатном соусе со специями",390],
+  ["Круассан с лососем","Слабосолёный лосось, сливочный сыр, зелень",450],
+  ["Боул с авокадо","Киноа, овощи, авокадо, яйцо пашот",490]]},
+ "Авторские десерты":{items:[
+  ["Корпусное пирожное","Авторский вкус ручной работы, спрашивайте на витрине",390],
+  ["Макарон","Хрустящая корочка и нежная начинка",120],
+  ["Тарталетка","Песочная корзинка и воздушный крем",320],
+  ["Чизкейк","Классический или авторский, со свежей ягодой",360],
+  ["Эклер","Заварное тесто и натуральный крем",230]]},
+ "Выпечка":{items:[
+  ["Круассан","Свежий, из утренней выпечки",190],
+  ["Миндальный круассан","С миндальным кремом и лепестками",260],
+  ["Слойка с ягодой","Хрустящая, с ягодной начинкой",170],
+  ["Бриошь","Мягкая, сливочная, золотистая",180]]},
+ "Напитки":{items:[
+  ["Капучино","Спешелти-кофе, нежная молочная пенка",220],
+  ["Латте","Мягкий, сливочный вкус",240],
+  ["Американо","Классика на спешелти-зерне",160],
+  ["Флэт уайт","Насыщенный, с двойным эспрессо",250],
+  ["Авторский кофе","Сезонные рецепты LUV",290],
+  ["Матча","Церемониальный чай, на молоке по желанию",320],
+  ["Какао","Густое, горячее, с маршмеллоу",230],
+  ["Домашний лимонад","Освежающий, на свежих ягодах и цитрусах",260],
+  ["Чай","Листовой, на выбор",200]]},
+ "Торты на заказ":{note:"Цена ориентировочная, итог рассчитаем после уточнения начинки и декора. Забрать можно в кондитерской на Гоголя, 38", cake:1, items:[
+  ["Бенто-торт","Небольшой торт на 1–3 персоны с надписью и декором",1500,1],
+  ["Праздничный торт","Индивидуальный декор и начинка, цена за 1 кг",2800,1]]}
+};
+</script>
+
+<header><div class="wrap"><a href="#top" class="logo">LUV</a>
+<nav><a href="#about">О нас</a><a href="#menu">Меню</a><a href="#reviews">Отзывы</a><a href="#contacts">Контакты</a><a href="#order">Предзаказ</a></nav>
+<a href="#order" class="btn fill sm cartchip">Мой заказ<b id="cnt">0</b></a></div></header>
+
+<main id="top">
+<section class="hero"><div class="wrap">
+<div><div class="eyebrow">Бугульма · Кофейня и кондитерская</div>
+<h1>LUV — кофейня и кондитерская <em>в Бугульме</em></h1>
+<p>Завтраки до 17:30, спешелти-кофе и авторские десерты ручной работы</p>
+<div class="cta"><a href="#menu" class="btn fill">Посмотреть меню</a><a href="#order" class="btn ghost" data-cake>Заказать торт</a></div></div>
+<div class="ph"><img data-src="hero" alt="Кофе LUV"></div>
+</div></section>
+
+<section id="about"><div class="wrap about">
+<div class="ph"><img data-src="about" alt="Светлый зал кофейни LUV"></div>
+<div><div class="eyebrow">О проекте</div><h2>Светлый зал в центре города</h2>
+<p>LUV — место, где хочется остаться подольше: воздушный интерьер, мягкий свет, красивая посуда и внимание к каждой детали. Мы готовим из натуральных ингредиентов, каждое утро печём свежие круассаны и слойки, а десерты делаем вручную.</p>
+<p>Кофе и десерты можно взять с собой — для прогулки, офиса или тёплого вечера дома.</p>
+<div class="facts">
+<div class="fact"><b>8:00–17:30</b><span>завтраки весь день</span></div>
+<div class="fact"><b>Спешелти</b><span>кофе и авторские напитки</span></div>
+<div class="fact"><b>Ручная работа</b><span>корпусные десерты</span></div>
+<div class="fact"><b>С собой</b><span>кофе, выпечка, десерты</span></div></div></div>
+</div></section>
+
+<section id="menu" class="alt"><div class="wrap">
+<div class="eyebrow">Меню</div><h2>Вкусно с утра до вечера</h2>
+<div class="tabs" role="tablist" id="tabs"></div>
+<div class="note" id="note"></div>
+<div class="grid" id="grid"></div>
+<p class="legal">Цены носят ознакомительный характер, актуальное наличие уточняйте на витрине.</p>
+</div></section>
+
+<section id="reviews"><div class="wrap">
+<div class="eyebrow">Отзывы гостей</div><h2>Нас любят за вкус и уют</h2>
+<div class="score"><b>4.9–5.0</b><span style="color:var(--muted)">средний рейтинг на картах</span></div>
+<div class="revs">
+<div class="rev"><div class="stars">★★★★★</div><p>Самые нежные десерты в городе. Подача — как в красивом кино, всё в эстетичной посуде.</p><small>Гость кофейни</small></div>
+<div class="rev"><div class="stars">★★★★★</div><p>Очень уютно и светло. Персонал приветливый, кофе вкусный, завтрак принесли быстро.</p><small>Гость кофейни</small></div>
+<div class="rev"><div class="stars">★★★★★</div><p>Заказывали торт на день рождения — вкус и декор превзошли ожидания. Спасибо!</p><small>Заказ в кондитерской</small></div>
+</div></div></section>
+
+<section id="contacts" class="alt"><div class="wrap">
+<div class="eyebrow">Локации и контакты</div><h2>Две точки в Бугульме</h2>
+<div class="locs">
+<div class="loc"><h3>Кофейня LUV</h3><p>Основной зал с посадкой, завтраки, кофе и десерты</p><p>г. Бугульма, ул. Советская, 56</p><p>Ежедневно 08:00–21:00</p><p><a class="l" href="https://www.instagram.com/luv.na.sovetskoy/" target="_blank" rel="noopener">@luv.na.sovetskoy</a></p></div>
+<div class="loc"><h3>Кондитерская LUV</h3><p>Витрина десертов, торты и самовывоз заказов</p><p>г. Бугульма, ул. Николая Гоголя, 38</p><p><a class="l" href="https://www.instagram.com/luv.samoilova/" target="_blank" rel="noopener">@luv.samoilova</a></p></div></div>
+<div class="phones"><span>Связь и бронирование:</span><a class="btn ghost sm" href="tel:+79872306785">+7 (987) 230-67-85</a><a class="btn ghost sm" href="tel:+79175124052">+7 (917) 512-40-52</a></div>
+<div class="mapbox"><div id="map"></div>
+<div class="mapbar"><span>Нажмите на метку, чтобы увидеть адрес и построить маршрут</span>
+<a class="btn fill sm" id="routeAll" target="_blank" rel="noopener">Построить маршрут в Яндекс Картах</a></div></div>
+</div></section>
+
+<section id="order"><div class="wrap">
+<div class="eyebrow">Предзаказ</div><h2>Соберите заказ или закажите торт</h2>
+<div class="orderwrap">
+<div class="panel"><h3>Ваш заказ</h3>
+<div class="cartlist" id="cartlist"></div>
+<div class="total" id="total" style="display:none"></div>
+<p class="legal" style="margin-top:12px">Добавляйте позиции из меню кнопкой «Добавить к заказу», они появятся здесь и в заявке.</p></div>
+<div class="panel"><h3>Заявка</h3>
+<form id="f">
+<label>Имя<input name="n" required autocomplete="name" placeholder="Как к вам обращаться"></label>
+<div class="two"><label>Телефон<input name="p" type="tel" required autocomplete="tel" placeholder="+7 (___) ___-__-__"></label>
+<label>Дата мероприятия или визита<input name="d" type="date" required></label></div>
+<label>Состав заказа (заполняется автоматически, можно править)<textarea name="o" id="orderTxt" placeholder="Выберите позиции в меню"></textarea></label>
+<label>Пожелания по начинке и декору<textarea name="w" placeholder="Например: ягодный мусс, надпись «С днём рождения»"></textarea></label>
+<button class="btn fill" type="submit">Отправить заявку в WhatsApp</button>
+<div class="msg" id="msg"></div></form></div>
+</div></div></section>
+</main>
+
+<footer><div class="wrap"><span class="logo">LUV</span>Кофейня и кондитерская · Бугульма, Республика Татарстан<br><br>
+<a href="https://www.instagram.com/luv.na.sovetskoy/" target="_blank" rel="noopener">Instagram кофейни</a><a href="https://www.instagram.com/luv.samoilova/" target="_blank" rel="noopener">Instagram кондитерской</a></div></footer>
+
+<nav class="mbar" aria-label="Быстрый доступ"><a href="#menu">Меню</a><a href="#order" class="main" data-cake>Заказать торт</a><a href="tel:+79872306785">Позвонить</a></nav>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+var rub=function(n){return n.toLocaleString("ru-RU")+" ₽"};
+/* фото: подставляем из IMG, при ошибке скрываем картинку (видна заливка) */
+function photo(src,alt){var i=new Image();i.alt=alt||"";i.loading="lazy";i.onerror=function(){i.className="fail"};i.src=src;return i}
+document.querySelectorAll("img[data-src]").forEach(function(el){var p=el.parentNode;p.replaceChild(photo(IMG[el.dataset.src],el.alt),el)});
+
+/* меню */
+var cart={},cur="Завтраки",pos={};
+var tabs=$("#tabs"),grid=$("#grid"),note=$("#note");
+function show(k){cur=k;
+ [].forEach.call(tabs.children,function(b){b.setAttribute("aria-selected",b.textContent===k)});
+ var c=MENU[k];note.textContent=c.note||"";note.style.display=c.note?"block":"none";
+ grid.innerHTML="";
+ c.items.forEach(function(it,idx){
+  var d=document.createElement("div");d.className="item";
+  var ph=document.createElement("div");ph.className="ph";
+  var im=photo(IMG.items[it[0]]||IMG.menu[k],it[0]);
+  if(!IMG.items[it[0]])im.style.objectPosition=[ "50% 50%","20% 40%","80% 60%","50% 25%","30% 75%","70% 30%"][idx%6];
+  ph.appendChild(im);d.appendChild(ph);
+  var b=document.createElement("div");b.className="body";
+  b.innerHTML="<h3></h3><p></p><div class='row'><span class='price'></span><button class='btn fill sm'>Добавить к заказу</button></div>";
+  b.querySelector("h3").textContent=it[0];b.querySelector("p").textContent=it[1];
+  b.querySelector(".price").textContent=(it[3]?"от ":"")+rub(it[2]);
+  b.querySelector("button").onclick=function(){add(it)};
+  d.appendChild(b);grid.appendChild(d)});
+}
+Object.keys(MENU).forEach(function(k){var b=document.createElement("button");b.className="tab";b.setAttribute("role","tab");b.textContent=k;b.onclick=function(){show(k)};tabs.appendChild(b)});
+show(cur);
+document.querySelectorAll("[data-cake]").forEach(function(a){a.addEventListener("click",function(){show("Торты на заказ")})});
+
+/* корзина */
+var tt;function toast(t){var e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){e.classList.remove("on")},1800)}
+function add(it){var c=cart[it[0]]||(cart[it[0]]={n:it[0],p:it[2],f:!!it[3],q:0});c.q++;render();toast("Добавлено: "+it[0])}
+function chg(n,d){cart[n].q+=d;if(cart[n].q<=0)delete cart[n];render()}
+function lines(){return Object.keys(cart).map(function(k){var c=cart[k];return c.n+" × "+c.q+" — "+(c.f?"от ":"")+rub(c.p*c.q)})}
+function render(){
+ var ks=Object.keys(cart),list=$("#cartlist"),cnt=0,sum=0,from=false;
+ list.innerHTML="";
+ if(!ks.length)list.innerHTML="<div class='empty'>Пока пусто. Выберите что-нибудь вкусное в меню.</div>";
+ ks.forEach(function(k){var c=cart[k];cnt+=c.q;sum+=c.p*c.q;if(c.f)from=true;
+  var r=document.createElement("div");r.className="cl";
+  r.innerHTML="<span></span><span class='qty'><button aria-label='Меньше'>−</button><span>"+c.q+"</span><button aria-label='Больше'>+</button></span><b></b>";
+  r.children[0].textContent=c.n;r.children[2].textContent=(c.f?"от ":"")+rub(c.p*c.q);
+  var bs=r.querySelectorAll("button");bs[0].onclick=function(){chg(k,-1)};bs[1].onclick=function(){chg(k,1)};
+  list.appendChild(r)});
+ var t=$("#total");t.style.display=ks.length?"flex":"none";t.innerHTML="<span>Итого</span><span>"+(from?"от ":"")+rub(sum)+"</span>";
+ $("#cnt").textContent=cnt;
+ $("#orderTxt").value=ks.length?lines().join("\n")+"\nИтого: "+(from?"от ":"")+rub(sum):"";
+}
+render();
+
+$("#f").addEventListener("submit",function(e){e.preventDefault();var f=e.target;
+ var t="Здравствуйте! Заявка с сайта LUV.\nИмя: "+f.n.value+"\nТелефон: "+f.p.value+"\nДата: "+f.d.value+"\n\nЗаказ:\n"+(f.o.value||"—")+"\n\nПожелания: "+(f.w.value||"—");
+ $("#msg").textContent="Открываем WhatsApp с готовой заявкой…";
+ window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(t),"_blank");
+});
+
+/* карта */
+var route=function(p){return "https://yandex.ru/maps/?rtext=~"+p[0]+","+p[1]+"&rtt=auto"};
+$("#routeAll").href=route(PLACES[0].pos);
+var mapEl=$("#map");
+if(window.L){
+ var map=L.map(mapEl,{scrollWheelZoom:false,tap:true}).setView([54.5384,52.7976],15);
+ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+ var b=[];
+ PLACES.forEach(function(p){
+  var ic=L.divIcon({className:"",html:"<div class='pin'><i>"+p.m+"</i></div>",iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-34]});
+  var pop="<div class='pop'><h4>"+p.n+"</h4><p>"+p.a+"</p><p>"+p.h+"</p><a class='go' target='_blank' rel='noopener' href='"+route(p.pos)+"'>Маршрут в Яндекс Картах</a></div>";
+  L.marker(p.pos,{icon:ic,title:p.n}).addTo(map).bindPopup(pop,{minWidth:210});b.push(p.pos)});
+ map.fitBounds(b,{padding:[70,70],maxZoom:16});
+ map.on("focus",function(){map.scrollWheelZoom.enable()});map.on("blur",function(){map.scrollWheelZoom.disable()});
+}else{
+ mapEl.innerHTML="<div class='mapfallback'>Карта недоступна. Используйте кнопки маршрута:<br><br>"+PLACES.map(function(p){return "<a class='btn ghost sm' target='_blank' rel='noopener' href='"+route(p.pos)+"'>"+p.n+"</a>"}).join(" ")+"</div>";
+}
+})();
+</script>
+</body>
+</html>
